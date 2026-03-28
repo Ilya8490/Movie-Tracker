@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserMovieStatus {
+  plan_to_watch
+  watching
+  watched
+  dropped
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  userMovies   UserMovie[]
+  lists        List[]
+}
+
+model Movie {
+  id             String      @id @default(cuid())
+  tmdbId         Int         @unique
+  title          String
+  posterPath     String?
+  overview       String
+  releaseDate    DateTime?
+  tmdbVoteAverage Float?
+  genres         String[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  userMovies     UserMovie[]
+  listItems      ListItem[]
+}
+
+model UserMovie {
+  id          String          @id @default(cuid())
+  userId      String
+  movieId     String
+  status      UserMovieStatus
+  rating      Int?
+  review      String?
+  watchedAt   DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie       Movie           @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+}
+
+model List {
+  id          String      @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       ListItem[]
+}
+
+model ListItem {
+  id        String    @id @default(cuid())
+  listId     String
+  movieId    String
+  createdAt  DateTime @default(now())
+  list       List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, movieId])
+}

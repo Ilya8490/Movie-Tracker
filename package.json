@@ -1,0 +1,17 @@
+{
+  "name": "movie-tracker",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace @movie-tracker/web run dev",
+    "dev:api": "npm --workspace @movie-tracker/api run dev",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "prisma:generate": "npm --workspace @movie-tracker/api run prisma:generate",
+    "prisma:migrate": "npm --workspace @movie-tracker/api run prisma:migrate"
+  }
+}
